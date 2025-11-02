@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Berlin-Clock-wise</title>
     <style>
-		#sekundenContainer {
+		#secondsContainer {
             border: none;
             text-align: center; 
 			width: 100%;
@@ -17,7 +17,7 @@
 			justify-content: center;
 		}
 		
-		#gelbKreis {
+		#yellowCircle {
 			width: 60px;
 			height: 60px;
 			background-color: yellow;
@@ -25,7 +25,7 @@
 			border-radius: 50%;
 		}
 		
-		#grauKreis {
+		#greyCircle {
 			width: 60px;
 			height: 60px;
 			background-color: lightgrey;
@@ -33,29 +33,23 @@
 			border-radius: 50%;
 		}
 		
-		.aussereTabelle {
+		.outerTable {
 			border: 2px solid black;
 			border-collapse: collapse;
 			width: 400px;
 		}
 		
-		.aussereZelle {
+		.outerCell {
 			width: 100%;
 		}
-		
 
-		.innereContainer {
-			width: 100%;
-			overflow: hidden;
-		}
-		
-		.innereTabelle {
+		.innerTable {
 			background-color: white;
 			border-collapse: collapse;
 			border: none;
 			width: 100%;
 		}
-		.innereZeitZelleNormal {
+		.innerTimeCellNormal {
 			border-right: 2px solid black;
 			border-top: none;
 			border-left: none;
@@ -67,7 +61,7 @@
 			width: 12%;
 		}	
 	
-		.innereZeitZelleRechts {
+		.innerTimeCellRight {
 			border-right: none;
 			border-top: none;
 			border-left: none;
@@ -79,15 +73,7 @@
 			vertical-align: middle;
 		}	
 	
-		.innereSekundenZelle {
-			border: none;
-			height: 60px; 
-			backgroundColor: lightgrey; 
-			text-align: center;
-			vertical-align: middle;
-		}	
-		
-		.innereMinutenZelleNormal {
+		.innerMinutesCellNormal {
 			border-right: 2px solid black;
 			border-top: 2px solid black;
 			border-left: none;
@@ -98,7 +84,7 @@
 			vertical-align: middle;
 		}	
 	
-		.innereMinutenZelleRechts {
+		.innerMinutesCellRight {
 			border-right: none;
 			border-top: 2px solid black;
 			border-left: none;
@@ -109,7 +95,7 @@
 			vertical-align: middle;
 		}	
 
-		.innereLampenZelleNormal {
+		.innerLampsCellNormal {
 			border-right: 2px solid black;
 			border-top: 2px solid black;
 			border-left: none;
@@ -120,7 +106,7 @@
 			vertical-align: middle;
 		}	
 	
-		.innereLampenZelleRechts {
+		.innerLampsCellRight {
 			border-right: none;
 			border-top: 2px solid black;
 			border-left: none;
@@ -147,15 +133,17 @@
             <!-- Table newTableRows and cells will be added here by JavaScript -->
         </tbody>
     </table>
+	<br>
+	<br>
 
     <script>
         const fileInput = document.getElementById('fileInput');
         const dataTableBody = document.getElementById('dataTableBody');
-		document.getElementById('dataTable').classList.add('aussereTabelle');
+		document.getElementById('dataTable').classList.add('outerTable');
 
 
         // On every user selection this will be executed 
-        // Continous refresh is impossible within ths context 
+        // Continous refresh is impossible within this context 
         fileInput.addEventListener('change', function(event) {
             const userfile = event.target.files[0];
             if (userfile) {
@@ -198,74 +186,61 @@
 				// Create new table row 
                 const newTableRow = document.createElement('tr'); 
 				// Human readable time
-				if (lineCounter == 0) {
+				if (lineCounter == 0) {  
 						const cell = document.createElement('td');
-						cell.classList.add('aussereZelle');
-						const innerContainer = document.createElement('div'); 
-						innerContainer.classList.add('innereContainer');
+						cell.classList.add('outerCell');
 						const innerTable = document.createElement('table'); 
-						innerTable.classList.add('innereTabelle');
+						innerTable.classList.add('innerTable');
 						const newInnerRow = document.createElement('tr'); 
 						for (let i = 0; i < line.length; i++) {
 							const character = line[i];
 							const innerCell = document.createElement('td');
 							if (i < (line.length-1)) {
-								innerCell.classList.add('innereZeitZelleNormal'); 
+								innerCell.classList.add('innerTimeCellNormal'); 
 							} else {
 								// innerCell.style.borderRight = 'none';
-								innerCell.classList.add('innereZeitZelleRechts');
+								innerCell.classList.add('innerTimeCellRight');
 							}
 							innerCell.textContent = character;
 							newInnerRow.appendChild(innerCell); 
 						} 
 						innerTable.appendChild(newInnerRow);
-						innerContainer.appendChild(innerTable);
-						cell.appendChild(innerContainer);
+						cell.appendChild(innerTable);
 						newTableRow.appendChild(cell); 
 				// Round lamp signal for the seconds 
-				} else if (lineCounter == 1) {
+				} else if (lineCounter == 1) {  
 						const character = line[0];
 						const cell = document.createElement('td');
-						cell.classList.add('aussereZelle');
+						cell.classList.add('outerCell');
 						cell.style.textAlign = 'center';
 
-						const innerTable = document.createElement('table'); 
-						innerTable.classList.add('innereTabelle');
-						cell.appendChild(innerTable);					
-
-						const sekundenDiv = document.createElement("div");
-						sekundenDiv.id = 'sekundenContainer';
+						const secondsDiv = document.createElement("div");  // needed for center alignment
+						secondsDiv.id = 'secondsContainer';
 						const kreisDiv = document.createElement("div");
 						if (character === '0') {
-							kreisDiv.id = 'grauKreis';
+							kreisDiv.id = 'greyCircle';
 						} else {
-							kreisDiv.id = 'gelbKreis';
+							kreisDiv.id = 'yellowCircle';
 						}
-						sekundenDiv.appendChild(kreisDiv);
-
-						const newInnerRow = document.createElement('tr'); 
-						const innerCell = document.createElement('td');
-						innerCell.classList.add('innereSekundenZelle');
-						innerCell.appendChild(sekundenDiv);
-						newInnerRow.appendChild(innerCell); 
-						innerTable.appendChild(newInnerRow);
+						secondsDiv.appendChild(kreisDiv);
+						cell.appendChild(secondsDiv);
 						newTableRow.appendChild(cell); 
 				// Minutes in 11 groups of 5 
 				} else if (lineCounter == 4) {
 						const cell = document.createElement('td');
-						cell.classList.add('aussereZelle');
+						cell.classList.add('outerCell');
 						const innerTable = document.createElement('table'); 
-						innerTable.classList.add('innereTabelle');
+						innerTable.classList.add('innerTable');
 						cell.appendChild(innerTable);
 						const newInnerRow = document.createElement('tr'); 
 						for (let i = 0; i < line.length; i++) {
 							const character = line[i];
 							const innerCell = document.createElement('td');
 							if (i < (line.length-1)) {
-								innerCell.classList.add('innereMinutenZelleNormal'); 
+								innerCell.classList.add('innerMinutesCellNormal'); 
 							} else {
 								// innerCell.style.borderRight = 'none';
-								innerCell.classList.add('innereMinutenZelleRechts');
+								innerCell.classList.add('innerMinutesCellRight');
 							}
 
 							innerCell.style.backgroundColor = CalcLampColor(character);
@@ -273,21 +248,22 @@
 						} 
 						innerTable.appendChild(newInnerRow);
 						newTableRow.appendChild(cell); 
+				// Hours and single minutes
 				} else {
 						const cell = document.createElement('td');
-						cell.classList.add('aussereZelle');
+						cell.classList.add('outerCell');
 						const innerTable = document.createElement('table'); 
-						innerTable.classList.add('innereTabelle');
+						innerTable.classList.add('innerTable');
 						cell.appendChild(innerTable);
 						const newInnerRow = document.createElement('tr'); 
 						for (let i = 0; i < line.length; i++) {
 							const character = line[i];
 							const innerCell = document.createElement('td');
 							if (i < (line.length-1)) {
-								innerCell.classList.add('innereLampenZelleNormal'); 
+								innerCell.classList.add('innerLampsCellNormal'); 
 							} else {
 								// innerCell.style.borderRight = 'none';
-								innerCell.classList.add('innereLampenZelleRechts');
+								innerCell.classList.add('innerLampsCellRight');
 							}
 
 							innerCell.style.backgroundColor = CalcLampColor(character);
@@ -304,17 +280,3 @@
     </script>
 </body>
 </html>
-
-
-<!--
-            width: 33px; 
-
-
-			display: flex;
-			align-items: center;
-			justify-content: center;
-
-
-			width: 16px; 
-			width: 33px; 
--->
