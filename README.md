@@ -13,7 +13,7 @@ To get results take the following steps:
 
 The batch file "bc.bat" loops indefinitely and writes every second to a text file called "berlinclock.dat". See "bc.bat" for detailed description of content.
 The HTML page lets the user choose the output file of "bc.bat" and displays the data using Javascript to determine which lamps should be on or off.
-This techniques does not allow continous reloading of the dat file but you will get the picture.
+This techniques do not allow continous reloading of the dat file but you will get the picture.
 Please understand this project as a simple proof-of-concept, nothing else.
 Of course there are tons of possibilities to improve this solution and would i get paid for it then i would do it of course.
 
