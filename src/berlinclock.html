@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berlin-Clock-wise</title>
+    <style>
+		#sekundenContainer {
+            border: none;
+            text-align: center; 
+			width: 100%;
+			background-color: white;
+			margin-left: auto;
+			margin-right: auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		#gelbKreis {
+			width: 60px;
+			height: 60px;
+			background-color: yellow;
+			border: 3px solid black;
+			border-radius: 50%;
+		}
+		
+		#grauKreis {
+			width: 60px;
+			height: 60px;
+			background-color: lightgrey;
+			border: 3px solid black;
+			border-radius: 50%;
+		}
+		
+		.aussereTabelle {
+			border: 2px solid black;
+			border-collapse: collapse;
+			width: 400px;
+		}
+		
+		.aussereZelle {
+			width: 100%;
+		}
+		
+
+		.innereContainer {
+			width: 100%;
+			overflow: hidden;
+		}
+		
+		.innereTabelle {
+			background-color: white;
+			border-collapse: collapse;
+			border: none;
+			width: 100%;
+		}
+		.innereZeitZelleNormal {
+			border-right: 2px solid black;
+			border-top: none;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			backgroundColor: white; 
+			text-align: center; 
+			vertical-align: middle;
+			width: 12%;
+		}	
+	
+		.innereZeitZelleRechts {
+			border-right: none;
+			border-top: none;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			width: 12%;
+			backgroundColor: white; 
+			text-align: center; 
+			vertical-align: middle;
+		}	
+	
+		.innereSekundenZelle {
+			border: none;
+			height: 60px; 
+			backgroundColor: lightgrey; 
+			text-align: center;
+			vertical-align: middle;
+		}	
+		
+		.innereMinutenZelleNormal {
+			border-right: 2px solid black;
+			border-top: 2px solid black;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			width: 9%; 
+			text-align: center; 
+			vertical-align: middle;
+		}	
+	
+		.innereMinutenZelleRechts {
+			border-right: none;
+			border-top: 2px solid black;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			width: 9%; 
+			text-align: center; 
+			vertical-align: middle;
+		}	
+
+		.innereLampenZelleNormal {
+			border-right: 2px solid black;
+			border-top: 2px solid black;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			width: 25%;
+			text-align: center; 
+			vertical-align: middle;
+		}	
+	
+		.innereLampenZelleRechts {
+			border-right: none;
+			border-top: 2px solid black;
+			border-left: none;
+			border-bottom: 2px solid black;
+			height: 60px; 
+			width: 25%;
+			text-align: center; 
+			vertical-align: middle;
+		}	
+
+  </style>
+</head>
+<body>
+	<br>
+	<br>
+    <h2>Select a data file</h2>
+	<br>
+    <input type="file" id="fileInput" accept=".dat">
+	<br>
+	<br>
+	<br>
+    <table id="dataTable">
+        <tbody id="dataTableBody">
+            <!-- Table newTableRows and cells will be added here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dataTableBody = document.getElementById('dataTableBody');
+		document.getElementById('dataTable').classList.add('aussereTabelle');
+
+
+        // On every user selection this will be executed 
+        // Continous refresh is impossible within ths context 
+        fileInput.addEventListener('change', function(event) {
+            const userfile = event.target.files[0];
+            if (userfile) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    populateTableWithCharacters(text); 
+                };
+
+                reader.onerror = function(e) {
+                    dataTableBody.innerHTML = `<tr><td>Error reading file: ${e.target.error.name}</td></tr>`;
+                };
+				// Let the user choose the next iteration 
+                reader.readAsText(userfile);
+            }
+			event.target.value = '';
+        });
+		
+		function CalcLampColor(character) {
+			// Conditional coloring based on character
+			if (character === '0') {
+				return 'white';  // lamp iS off 
+			} else if (character === '1') {
+				return 'yellow';  // Minutes: yellow lamp 
+			} else if (character === '2') {
+				return 'red';  // red lamp. Hours or Minutegroups: every three groups 
+			} else {
+				return 'lightgrey';  // error fallback 
+			}
+		}
+
+        // Construct the table and its content 
+        function populateTableWithCharacters(text) {
+            dataTableBody.innerHTML = ''; 
+            const lines = text.split(/\r\n|\n|\r/); 
+			var lineCounter = 0;
+            lines.forEach((line) => {
+                if (line.trim() === '') return; 
+				// Create new table row 
+                const newTableRow = document.createElement('tr'); 
+				// Human readable time
+				if (lineCounter == 0) {
+						const cell = document.createElement('td');
+						cell.classList.add('aussereZelle');
+						const innerContainer = document.createElement('div'); 
+						innerContainer.classList.add('innereContainer');
+						const innerTable = document.createElement('table'); 
+						innerTable.classList.add('innereTabelle');
+						const newInnerRow = document.createElement('tr'); 
+						for (let i = 0; i < line.length; i++) {
+							const character = line[i];
+							const innerCell = document.createElement('td');
+							if (i < (line.length-1)) {
+								innerCell.classList.add('innereZeitZelleNormal'); 
+							} else {
+								// innerCell.style.borderRight = 'none';
+								innerCell.classList.add('innereZeitZelleRechts');
+							}
+							innerCell.textContent = character;
+							newInnerRow.appendChild(innerCell); 
+						} 
+						innerTable.appendChild(newInnerRow);
+						innerContainer.appendChild(innerTable);
+						cell.appendChild(innerContainer);
+						newTableRow.appendChild(cell); 
+				// Round lamp signal for the seconds 
+				} else if (lineCounter == 1) {
+						const character = line[0];
+						const cell = document.createElement('td');
+						cell.classList.add('aussereZelle');
+						cell.style.textAlign = 'center';
+
+						const innerTable = document.createElement('table'); 
+						innerTable.classList.add('innereTabelle');
+						cell.appendChild(innerTable);					
+
+						const sekundenDiv = document.createElement("div");
+						sekundenDiv.id = 'sekundenContainer';
+						const kreisDiv = document.createElement("div");
+						if (character === '0') {
+							kreisDiv.id = 'grauKreis';
+						} else {
+							kreisDiv.id = 'gelbKreis';
+						}
+						sekundenDiv.appendChild(kreisDiv);
+
+						const newInnerRow = document.createElement('tr'); 
+						const innerCell = document.createElement('td');
+						innerCell.classList.add('innereSekundenZelle');
+						innerCell.appendChild(sekundenDiv);
+						newInnerRow.appendChild(innerCell); 
+						innerTable.appendChild(newInnerRow);
+						newTableRow.appendChild(cell); 
+				// Minutes in 11 groups of 5 
+				} else if (lineCounter == 4) {
+						const cell = document.createElement('td');
+						cell.classList.add('aussereZelle');
+						const innerTable = document.createElement('table'); 
+						innerTable.classList.add('innereTabelle');
+						cell.appendChild(innerTable);
+						const newInnerRow = document.createElement('tr'); 
+						for (let i = 0; i < line.length; i++) {
+							const character = line[i];
+							const innerCell = document.createElement('td');
+							if (i < (line.length-1)) {
+								innerCell.classList.add('innereMinutenZelleNormal'); 
+							} else {
+								// innerCell.style.borderRight = 'none';
+								innerCell.classList.add('innereMinutenZelleRechts');
+							}
+
+							innerCell.style.backgroundColor = CalcLampColor(character);
+							newInnerRow.appendChild(innerCell); 
+						} 
+						innerTable.appendChild(newInnerRow);
+						newTableRow.appendChild(cell); 
+				} else {
+						const cell = document.createElement('td');
+						cell.classList.add('aussereZelle');
+						const innerTable = document.createElement('table'); 
+						innerTable.classList.add('innereTabelle');
+						cell.appendChild(innerTable);
+						const newInnerRow = document.createElement('tr'); 
+						for (let i = 0; i < line.length; i++) {
+							const character = line[i];
+							const innerCell = document.createElement('td');
+							if (i < (line.length-1)) {
+								innerCell.classList.add('innereLampenZelleNormal'); 
+							} else {
+								// innerCell.style.borderRight = 'none';
+								innerCell.classList.add('innereLampenZelleRechts');
+							}
+
+							innerCell.style.backgroundColor = CalcLampColor(character);
+							newInnerRow.appendChild(innerCell); 
+						}
+						innerTable.appendChild(newInnerRow);
+						newTableRow.appendChild(cell); 
+                }
+                dataTableBody.appendChild(newTableRow);
+				lineCounter++;
+            });
+        }
+
+    </script>
+</body>
+</html>
+
+
+<!--
+            width: 33px; 
+
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+
+			width: 16px; 
+			width: 33px; 
+-->
