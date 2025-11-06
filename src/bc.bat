@@ -58,7 +58,7 @@ if %resultHoursDiv5% == 4 (set "berlinHoursResult=2222")
 
 :: Alternate representation of remainder of timeHours divided by 5
 if %remainderHoursDiv5% == 0 (set "berlinHoursRemainder=0000") else ^
-if %remainderHoursDiv5% == 2 (set "berlinHoursRemainder=2000") else ^
+if %remainderHoursDiv5% == 1 (set "berlinHoursRemainder=2000") else ^
 if %remainderHoursDiv5% == 2 (set "berlinHoursRemainder=2200") else ^
 if %remainderHoursDiv5% == 3 (set "berlinHoursRemainder=2220") else ^
 if %remainderHoursDiv5% == 4 (set "berlinHoursRemainder=2222")
